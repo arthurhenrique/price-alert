@@ -10,7 +10,7 @@ class TestPriceAlert(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(TestPriceAlert, self).__init__(*args, **kwargs)
         self.url = "http://localhost:8090/TESTITEM"
-        self.html_body = '<span id="priceblock_ourprice">79,99&nbsp;€</span>'
+        self.html_body = '<span id="priceblock_ourprice">1234&nbsp;€</span>'
         self.xpath_selector = "//*[@id='priceblock_ourprice']"
 
     def setUp(self):
@@ -26,7 +26,7 @@ class TestPriceAlert(unittest.TestCase):
 
     def test_get_price(self):
         price = get_price(self.url, self.xpath_selector)
-        expect(price).to.equal(79.99)
+        expect(price).to.equal(1234)
 
     def test_get_price_not_found(self):
         price = get_price(self.url, "//*[@id='wrong']")
