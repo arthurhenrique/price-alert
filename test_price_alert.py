@@ -1,9 +1,10 @@
+import os
 import unittest
 import httpretty
 import requests
 import logging
 from sure import expect
-from price_alert import config_logger, get_price
+from price_alert import config_logger, get_price, env_override
 
 
 class TestPriceAlert(unittest.TestCase):
@@ -31,6 +32,23 @@ class TestPriceAlert(unittest.TestCase):
     def test_get_price_not_found(self):
         price = get_price(self.url, "//*[@id='wrong']")
         expect(price).to.equal(None)
+
+    def test_env_override(self):
+        os.environ['PRICE_ALERT_BASE_URL'] = 'http://test.local'
+        os.environ['PRICE_ALERT_XPATH_SELECTOR'] = 'test.local'
+        os.environ['PRICE_ALERT_EMAIL__SMTP_URL'] = 'test.local:587'
+        os.environ['PRICE_ALERT_EMAIL__USER'] = 'test@example.com'
+        os.environ['PRICE_ALERT_EMAIL__PASSWORD'] = 'test1234'
+        config = env_override({})
+        expect(config).to.equal({
+            'email': {
+                'smtp_url': 'test.local:587',
+                'user': 'test@example.com',
+                'password': 'test1234'
+            },
+            'base_url': 'http://test.local',
+            'xpath_selector': 'test.local'
+        })
 
     def tearDown(self):
         httpretty.disable()
